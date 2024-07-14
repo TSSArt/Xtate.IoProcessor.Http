@@ -37,6 +37,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Primitives;
 using Xtate.Core;
+using Exception = System.Exception;
 
 namespace Xtate.IoProcessor
 {
@@ -136,14 +137,16 @@ namespace Xtate.IoProcessor
 			return new IPEndPoint(listenAddress, uri.Port);
 		}
 
-		protected override Uri GetTarget(SessionId sessionId)
+		protected override Uri GetTarget(ServiceId serviceId)
 		{
-			if (sessionId is null) throw new ArgumentNullException(nameof(sessionId));
+			if (serviceId is null) throw new ArgumentNullException(nameof(serviceId));
 
-			return new Uri(_baseUri, sessionId.Value);
+			return new Uri(_baseUri, serviceId.Value);
 		}
 
-		protected override async ValueTask OutgoingEvent(SessionId sessionId, IOutgoingEvent evt, CancellationToken token)
+		protected override ValueTask OutgoingEvent(IHostEvent hostEvent, CancellationToken token) => throw new NotImplementedException(); //TODO:
+
+		protected async ValueTask OutgoingEvent(ServiceId serviceId, IOutgoingEvent evt, CancellationToken token)
 		{
 			if (evt is null) throw new ArgumentNullException(nameof(evt));
 
@@ -165,7 +168,7 @@ namespace Xtate.IoProcessor
 			using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, targetUri)
 										   {
 												   Content = content,
-												   Headers = { { @"Origin", GetTarget(sessionId).ToString() } }
+												   Headers = { { @"Origin", GetTarget(serviceId).ToString() } }
 										   };
 
 			var httpResponseMessage = await client.SendAsync(httpRequestMessage, token).ConfigureAwait(false);
@@ -233,7 +236,8 @@ namespace Xtate.IoProcessor
 						break;
 
 					default:
-						Infrastructure.UnexpectedValue(pair.Value.Type);
+						//Infra.UnexpectedValue(pair.Value.Type);
+						throw new Exception("");//TODO:
 						break;
 				}
 			}
@@ -274,7 +278,9 @@ namespace Xtate.IoProcessor
 				return false;
 			}
 
-			if (!TryGetEventDispatcher(sessionId, out var eventDispatcher))
+			var eventDispatcher = await TryGetEventDispatcher(sessionId, token).ConfigureAwait(false);
+
+			if (eventDispatcher is null)
 			{
 				return false;
 			}
