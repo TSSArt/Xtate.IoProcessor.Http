@@ -234,7 +234,7 @@ public sealed class HttpIoProcessor : IoProcessorBase, IAsyncDisposable
 					break;
 
 				default:
-					throw Infra.Unexpected<Exception>(pair.Value.Type);
+					throw new InvalidOperationException();
 			}
 		}
 
