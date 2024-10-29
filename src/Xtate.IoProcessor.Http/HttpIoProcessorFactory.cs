@@ -25,7 +25,8 @@ namespace Xtate.IoProcessor;
 
 public sealed class HttpIoProcessorFactory : IIoProcessorFactory
 {
-	private readonly Uri        _baseUri;
+	private readonly Uri _baseUri;
+
 	private readonly IPEndPoint _ipEndPoint;
 
 	public HttpIoProcessorFactory(Uri baseUri, IPEndPoint ipEndPoint)

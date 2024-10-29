@@ -41,20 +41,29 @@ namespace Xtate.IoProcessor;
 
 public sealed class HttpIoProcessor : IoProcessorBase, IAsyncDisposable
 {
-	private const string Id                                 = @"http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor";
-	private const string Alias                              = @"http";
-	private const string ErrorSuffix                        = @"HttpIoProcessor";
-	private const string MediaTypeTextPlain                 = @"text/plain";
-	private const string MediaTypeApplicationJson           = @"application/json";
+	private const string Id = @"http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor";
+
+	private const string Alias = @"http";
+
+	private const string ErrorSuffix = @"HttpIoProcessor";
+
+	private const string MediaTypeTextPlain = @"text/plain";
+
+	private const string MediaTypeApplicationJson = @"application/json";
+
 	private const string MediaTypeApplicationFormUrlEncoded = @"application/x-www-form-urlencoded";
-	private const string EventNameParameterName             = @"_scxmleventname";
 
-	private static readonly ConcurrentDictionary<IPEndPoint, Host> Hosts      = new();
-	private static readonly ImmutableArray<IPAddress>              Interfaces = GetInterfaces();
+	private const string EventNameParameterName = @"_scxmleventname";
 
-	private readonly Uri        _baseUri;
+	private static readonly ConcurrentDictionary<IPEndPoint, Host> Hosts = new();
+
+	private static readonly ImmutableArray<IPAddress> Interfaces = GetInterfaces();
+
+	private readonly Uri _baseUri;
+
 	private readonly PathString _path;
-	private          IPEndPoint _ipEndPoint;
+
+	private IPEndPoint _ipEndPoint;
 
 	public HttpIoProcessor(IEventConsumer eventConsumer, Uri baseUri, IPEndPoint ipEndPoint) : base(eventConsumer, Id, Alias)
 	{
@@ -82,6 +91,7 @@ public sealed class HttpIoProcessor : IoProcessorBase, IAsyncDisposable
 		foreach (var networkInterface in NetworkInterface.GetAllNetworkInterfaces())
 		{
 			var ipInterfaceProperties = networkInterface.GetIPProperties();
+
 			foreach (var ipInterfaceProperty in ipInterfaceProperties.UnicastAddresses)
 			{
 				result.Add(ipInterfaceProperty.Address);
@@ -158,6 +168,7 @@ public sealed class HttpIoProcessor : IoProcessorBase, IAsyncDisposable
 		var targetUri = evt.Target.ToString();
 
 		var content = GetContent(evt, out var eventNameInContent);
+
 		if (!evt.NameParts.IsDefaultOrEmpty && !eventNameInContent)
 		{
 			targetUri = QueryHelpers.AddQueryString(targetUri, EventNameParameterName, EventName.ToName(evt.NameParts));
@@ -198,6 +209,7 @@ public sealed class HttpIoProcessor : IoProcessorBase, IAsyncDisposable
 				if (IsStringDictionary(dataModelList))
 				{
 					eventNameInContent = true;
+
 					return new FormUrlEncodedContent(GetParameters(evt.NameParts, dataModelList));
 				}
 
@@ -282,6 +294,7 @@ public sealed class HttpIoProcessor : IoProcessorBase, IAsyncDisposable
 		}
 
 		IEvent? evt;
+
 		try
 		{
 			evt = await CreateEvent(request, token).ConfigureAwait(false);
@@ -347,6 +360,7 @@ public sealed class HttpIoProcessor : IoProcessorBase, IAsyncDisposable
 		var encoding = contentType.CharSet is not null ? Encoding.GetEncoding(contentType.CharSet) : Encoding.ASCII;
 
 		string body;
+
 		using (var streamReader = new StreamReader(request.Body.InjectCancellationToken(token), encoding))
 		{
 			body = await streamReader.ReadToEndAsync().ConfigureAwait(false);
@@ -456,6 +470,7 @@ public sealed class HttpIoProcessor : IoProcessorBase, IAsyncDisposable
 		public async ValueTask AddProcessor(HttpIoProcessor httpIoProcessor, CancellationToken token)
 		{
 			ImmutableList<HttpIoProcessor> preVal, newVal;
+
 			do
 			{
 				preVal = _processors;
@@ -472,6 +487,7 @@ public sealed class HttpIoProcessor : IoProcessorBase, IAsyncDisposable
 		public async ValueTask RemoveProcessor(HttpIoProcessor httpIoProcessor, CancellationToken token)
 		{
 			ImmutableList<HttpIoProcessor> preVal, newVal;
+
 			do
 			{
 				preVal = _processors;
