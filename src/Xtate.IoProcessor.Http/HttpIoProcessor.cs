@@ -304,7 +304,7 @@ public sealed class HttpIoProcessor : IoProcessorBase, IAsyncDisposable
 			evt = CreateErrorEvent(request, ex);
 		}
 
-		await eventDispatcher.Send(evt, token).ConfigureAwait(false);
+		await eventDispatcher.Send(evt).ConfigureAwait(false);
 
 		return true;
 	}
