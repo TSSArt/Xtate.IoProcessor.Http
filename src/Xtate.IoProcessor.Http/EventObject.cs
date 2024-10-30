@@ -16,18 +16,17 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using System;
-using System.Collections.Immutable;
 
 namespace Xtate;
 
 internal class EventObject : IEvent
 {
-	public EventObject(ImmutableArray<IIdentifier> nameParts,
+	public EventObject(EventName name,
 					   Uri? origin,
 					   Uri originType,
 					   DataModelValue data)
 	{
-		NameParts = nameParts;
+		Name = name;
 		Origin = origin;
 		OriginType = originType;
 		Data = data.AsConstant();
@@ -38,7 +37,7 @@ internal class EventObject : IEvent
 					   Uri originType,
 					   DataModelValue data)
 	{
-		NameParts = EventName.ToParts(eventName);
+		Name = (EventName)eventName;
 		Origin = origin;
 		OriginType = originType;
 		Data = data.AsConstant();
@@ -50,7 +49,7 @@ internal class EventObject : IEvent
 
 	public InvokeId? InvokeId => null;
 
-	public ImmutableArray<IIdentifier> NameParts { get; }
+	public EventName Name { get; }
 
 	public Uri? Origin { get; }
 

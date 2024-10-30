@@ -169,9 +169,9 @@ public sealed class HttpIoProcessor : IoProcessorBase, IAsyncDisposable
 
 		var content = GetContent(evt, out var eventNameInContent);
 
-		if (!evt.NameParts.IsDefaultOrEmpty && !eventNameInContent)
+		if (!evt.Name.IsDefault && !eventNameInContent)
 		{
-			targetUri = QueryHelpers.AddQueryString(targetUri, EventNameParameterName, EventName.ToName(evt.NameParts));
+			targetUri = QueryHelpers.AddQueryString(targetUri, EventNameParameterName, evt.Name.ToString());
 		}
 
 		using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, targetUri)
@@ -193,9 +193,9 @@ public sealed class HttpIoProcessor : IoProcessorBase, IAsyncDisposable
 		{
 			case DataModelValueType.Undefined:
 			case DataModelValueType.Null:
-				eventNameInContent = !evt.NameParts.IsDefaultOrEmpty;
+				eventNameInContent = !evt.Name.IsDefault;
 
-				return eventNameInContent ? new FormUrlEncodedContent(GetParameters(evt.NameParts, dataModelList: null)) : null;
+				return eventNameInContent ? new FormUrlEncodedContent(GetParameters(evt.Name, dataModelList: null)) : null;
 
 			case DataModelValueType.String:
 				eventNameInContent = false;
@@ -210,7 +210,7 @@ public sealed class HttpIoProcessor : IoProcessorBase, IAsyncDisposable
 				{
 					eventNameInContent = true;
 
-					return new FormUrlEncodedContent(GetParameters(evt.NameParts, dataModelList));
+					return new FormUrlEncodedContent(GetParameters(evt.Name, dataModelList));
 				}
 
 				eventNameInContent = false;
@@ -253,11 +253,11 @@ public sealed class HttpIoProcessor : IoProcessorBase, IAsyncDisposable
 		return true;
 	}
 
-	private static IEnumerable<KeyValuePair<string?, string?>> GetParameters(ImmutableArray<IIdentifier> eventNameParts, DataModelList? dataModelList)
+	private static IEnumerable<KeyValuePair<string?, string?>> GetParameters(EventName eventName, DataModelList? dataModelList)
 	{
-		if (!eventNameParts.IsDefaultOrEmpty)
+		if (!eventName.IsDefault)
 		{
-			yield return new KeyValuePair<string?, string?>(EventNameParameterName, EventName.ToName(eventNameParts));
+			yield return new KeyValuePair<string?, string?>(EventNameParameterName, eventName.ToString());
 		}
 
 		if (dataModelList is not null)
