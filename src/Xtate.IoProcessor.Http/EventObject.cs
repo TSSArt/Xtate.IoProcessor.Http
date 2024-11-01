@@ -37,7 +37,7 @@ internal class EventObject : IEvent
 					   Uri originType,
 					   DataModelValue data)
 	{
-		Name = (EventName)eventName;
+		Name = (EventName) eventName;
 		Origin = origin;
 		OriginType = originType;
 		Data = data.AsConstant();
