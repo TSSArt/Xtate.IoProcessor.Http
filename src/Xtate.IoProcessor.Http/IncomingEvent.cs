@@ -19,9 +19,9 @@ using Xtate.Core;
 
 namespace Xtate;
 
-internal class EventObject : IEvent
+internal class IncomingEvent : IIncomingEvent
 {
-	public EventObject(EventName name,
+	public IncomingEvent(EventName name,
 					   FullUri? origin,
 					   FullUri originType,
 					   DataModelValue data)
@@ -32,7 +32,7 @@ internal class EventObject : IEvent
 		Data = data.AsConstant();
 	}
 
-	public EventObject(string eventName,
+	public IncomingEvent(string eventName,
 					   FullUri? origin,
 					   FullUri originType,
 					   DataModelValue data)
@@ -43,7 +43,7 @@ internal class EventObject : IEvent
 		Data = data.AsConstant();
 	}
 
-#region Interface IEvent
+#region Interface IIncomingEvent
 
 	public DataModelValue Data { get; }
 

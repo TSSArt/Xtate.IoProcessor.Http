@@ -293,7 +293,7 @@ public sealed class HttpIoProcessor : IoProcessorBase, IAsyncDisposable
 			return false;
 		}
 
-		IEvent? evt;
+		IIncomingEvent? evt;
 
 		try
 		{
@@ -321,7 +321,7 @@ public sealed class HttpIoProcessor : IoProcessorBase, IAsyncDisposable
 		return SessionId.FromString(unescapedString);
 	}
 
-	private IEvent CreateErrorEvent(HttpRequest request, Exception exception)
+	private IIncomingEvent CreateErrorEvent(HttpRequest request, Exception exception)
 	{
 		var requestData = new DataModelList
 						  {
@@ -351,10 +351,10 @@ public sealed class HttpIoProcessor : IoProcessorBase, IAsyncDisposable
 
 		exceptionData.MakeDeepConstant();
 
-		return new EventObject(EventName.GetErrorPlatform(ErrorSuffix), origin: default, IoProcessorId, data);
+		return new IncomingEvent(EventName.GetErrorPlatform(ErrorSuffix), origin: default, IoProcessorId, data);
 	}
 
-	private async ValueTask<IEvent> CreateEvent(HttpRequest request, CancellationToken token)
+	private async ValueTask<IIncomingEvent> CreateEvent(HttpRequest request, CancellationToken token)
 	{
 		var contentType = request.ContentType is not null ? new ContentType(request.ContentType) : new ContentType();
 		var encoding = contentType.CharSet is not null ? Encoding.GetEncoding(contentType.CharSet) : Encoding.ASCII;
@@ -375,7 +375,7 @@ public sealed class HttpIoProcessor : IoProcessorBase, IAsyncDisposable
 
 		eventName ??= eventNameInContent ?? request.Method;
 
-		return new EventObject(eventName, origin, IoProcessorId, data);
+		return new IncomingEvent(eventName, origin, IoProcessorId, data);
 	}
 
 	private static DataModelValue CreateData(string mediaType, string body, out string? eventName)
