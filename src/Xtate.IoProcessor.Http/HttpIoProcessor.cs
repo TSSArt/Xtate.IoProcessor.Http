@@ -145,11 +145,11 @@ public sealed class HttpIoProcessor : IoProcessorBase, IAsyncDisposable
 		return new IPEndPoint(listenAddress, uri.Port);
 	}
 
-	protected override Uri GetTarget(ServiceId serviceId)
+	protected override FullUri GetTarget(ServiceId serviceId)
 	{
 		if (serviceId is null) throw new ArgumentNullException(nameof(serviceId));
 
-		return new Uri(_baseUri, serviceId.Value);
+		return new FullUri(_baseUri, serviceId.Value);
 	}
 
 	protected override ValueTask OutgoingEvent(IHostEvent hostEvent, CancellationToken token) => throw new NotImplementedException(); //TODO:
@@ -366,7 +366,7 @@ public sealed class HttpIoProcessor : IoProcessorBase, IAsyncDisposable
 			body = await streamReader.ReadToEndAsync().ConfigureAwait(false);
 		}
 
-		Uri.TryCreate(request.Headers[@"Origin"].ToString(), UriKind.Absolute, out var origin);
+		FullUri.TryCreate(request.Headers[@"Origin"].ToString(), out var origin);
 
 		var data = CreateData(contentType.MediaType, body, out var eventNameInContent);
 

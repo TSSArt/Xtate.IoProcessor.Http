@@ -15,15 +15,15 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using System;
+using Xtate.Core;
 
 namespace Xtate;
 
 internal class EventObject : IEvent
 {
 	public EventObject(EventName name,
-					   Uri? origin,
-					   Uri originType,
+					   FullUri? origin,
+					   FullUri originType,
 					   DataModelValue data)
 	{
 		Name = name;
@@ -33,8 +33,8 @@ internal class EventObject : IEvent
 	}
 
 	public EventObject(string eventName,
-					   Uri? origin,
-					   Uri originType,
+					   FullUri? origin,
+					   FullUri originType,
 					   DataModelValue data)
 	{
 		Name = (EventName) eventName;
@@ -51,9 +51,9 @@ internal class EventObject : IEvent
 
 	public EventName Name { get; }
 
-	public Uri? Origin { get; }
+	public FullUri? Origin { get; }
 
-	public Uri OriginType { get; }
+	public FullUri OriginType { get; }
 
 	public SendId? SendId => null;
 
