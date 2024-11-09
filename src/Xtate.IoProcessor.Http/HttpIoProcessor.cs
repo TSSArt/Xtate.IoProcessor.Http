@@ -152,7 +152,7 @@ public sealed class HttpIoProcessor : IoProcessorBase, IAsyncDisposable
 		return new FullUri(_baseUri, serviceId.Value);
 	}
 
-	protected override ValueTask OutgoingEvent(IHostEvent hostEvent, CancellationToken token) => throw new NotImplementedException(); //TODO:
+	protected override ValueTask OutgoingEvent(IRouterEvent routerEvent) => throw new NotImplementedException(); //TODO:
 
 	protected async ValueTask OutgoingEvent(ServiceId serviceId, IOutgoingEvent evt, CancellationToken token)
 	{
@@ -304,7 +304,7 @@ public sealed class HttpIoProcessor : IoProcessorBase, IAsyncDisposable
 			evt = CreateErrorEvent(request, ex);
 		}
 
-		await eventDispatcher.Send(evt).ConfigureAwait(false);
+		await eventDispatcher.Dispatch(evt).ConfigureAwait(false);
 
 		return true;
 	}

@@ -37,9 +37,9 @@ public sealed class HttpIoProcessorFactory : IIoProcessorFactory
 
 #region Interface IIoProcessorFactory
 
-	public async ValueTask<IIoProcessor> Create(IEventConsumer eventConsumer, CancellationToken token)
+	public async ValueTask<IEventRouter> Create(IEventConsumer eventConsumer, CancellationToken token)
 	{
-		var httpIoProcessor = new HttpIoProcessor(eventConsumer, _baseUri, _ipEndPoint);
+		var httpIoProcessor = new HttpIoProcessor(eventConsumer, _baseUri, _ipEndPoint) { StateMachineSessionId = null };
 
 		await httpIoProcessor.Start(token).ConfigureAwait(false);
 
