@@ -41,9 +41,9 @@ namespace Xtate.IoProcessor;
 
 public sealed class HttpIoProcessor : IoProcessorBase, IAsyncDisposable
 {
-	private const string Id = @"http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor";
+	private static readonly FullUri Id = new(@"http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor");
 
-	private const string Alias = @"http";
+	private static readonly FullUri Alias = new(@"http");
 
 	private const string ErrorSuffix = @"HttpIoProcessor";
 
@@ -65,7 +65,7 @@ public sealed class HttpIoProcessor : IoProcessorBase, IAsyncDisposable
 
 	private IPEndPoint _ipEndPoint;
 
-	public HttpIoProcessor(IEventConsumer eventConsumer, Uri baseUri, IPEndPoint ipEndPoint) : base(eventConsumer, Id, Alias)
+	public HttpIoProcessor(IEventConsumer eventConsumer, Uri baseUri, IPEndPoint ipEndPoint) : base(Id, Alias)
 	{
 		_baseUri = baseUri ?? throw new ArgumentNullException(nameof(baseUri));
 		_path = PathString.FromUriComponent(baseUri);
@@ -286,7 +286,8 @@ public sealed class HttpIoProcessor : IoProcessorBase, IAsyncDisposable
 			return false;
 		}
 
-		var eventDispatcher = await TryGetEventDispatcher(sessionId, token).ConfigureAwait(false);
+		IEventDispatcher eventDispatcher = null; // LinkedList await TryGetEventDispatcher(sessionId, token).ConfigureAwait(false);//TODO
+
 
 		if (eventDispatcher is null)
 		{
@@ -351,7 +352,7 @@ public sealed class HttpIoProcessor : IoProcessorBase, IAsyncDisposable
 
 		exceptionData.MakeDeepConstant();
 
-		return new IncomingEvent(EventName.GetErrorPlatform(ErrorSuffix), origin: default, IoProcessorId, data);
+		return new IncomingEvent(EventName.GetErrorPlatform(ErrorSuffix), origin: default, Id, data);
 	}
 
 	private async ValueTask<IIncomingEvent> CreateEvent(HttpRequest request, CancellationToken token)
@@ -375,7 +376,7 @@ public sealed class HttpIoProcessor : IoProcessorBase, IAsyncDisposable
 
 		eventName ??= eventNameInContent ?? request.Method;
 
-		return new IncomingEvent(eventName, origin, IoProcessorId, data);
+		return new IncomingEvent(eventName, origin, Id, data);
 	}
 
 	private static DataModelValue CreateData(string mediaType, string body, out string? eventName)
