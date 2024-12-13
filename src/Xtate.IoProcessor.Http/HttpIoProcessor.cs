@@ -225,14 +225,14 @@ public sealed class HttpIoProcessor : IoProcessorBase, IAsyncDisposable
 
 	private static bool IsStringDictionary(DataModelList dataModelList)
 	{
-		foreach (var pair in dataModelList.KeyValues)
+		foreach (var (key, value) in dataModelList.KeyValues)
 		{
-			if (pair.Key is null)
+			if (key is null)
 			{
 				return false;
 			}
 
-			switch (pair.Value.Type)
+			switch (value.Type)
 			{
 				case DataModelValueType.List:
 				case DataModelValueType.Number:
@@ -262,9 +262,9 @@ public sealed class HttpIoProcessor : IoProcessorBase, IAsyncDisposable
 
 		if (dataModelList is not null)
 		{
-			foreach (var pair in dataModelList.KeyValues)
+			foreach (var (key, value) in dataModelList.KeyValues)
 			{
-				yield return new KeyValuePair<string?, string?>(pair.Key, Convert.ToString(pair.Value, CultureInfo.InvariantCulture));
+				yield return new KeyValuePair<string?, string?>(key, Convert.ToString(value, CultureInfo.InvariantCulture));
 			}
 		}
 	}
@@ -393,17 +393,17 @@ public sealed class HttpIoProcessor : IoProcessorBase, IAsyncDisposable
 			var pairs = QueryHelpers.ParseQuery(body);
 			var list = new DataModelList();
 
-			foreach (var pair in pairs)
+			foreach (var (key, value) in pairs)
 			{
-				if (pair.Key == EventNameParameterName)
+				if (key == EventNameParameterName)
 				{
-					eventName = pair.Value[0];
+					eventName = value[0];
 				}
 				else
 				{
-					foreach (var stringValue in pair.Value)
+					foreach (var stringValue in value)
 					{
-						list.Add(pair.Key, stringValue);
+						list.Add(key, stringValue);
 					}
 				}
 			}
