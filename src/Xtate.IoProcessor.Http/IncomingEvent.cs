@@ -1,4 +1,4 @@
-﻿// Copyright © 2019-2024 Sergii Artemenko
+﻿// Copyright © 2019-2025 Sergii Artemenko
 // 
 // This file is part of the Xtate project. <https://xtate.net/>
 // 
@@ -21,43 +21,43 @@ namespace Xtate;
 
 internal class IncomingEvent : IIncomingEvent
 {
-	public IncomingEvent(EventName name,
-					   FullUri? origin,
-					   FullUri originType,
-					   DataModelValue data)
-	{
-		Name = name;
-		Origin = origin;
-		OriginType = originType;
-		Data = data.AsConstant();
-	}
+    public IncomingEvent(EventName name,
+                         FullUri? origin,
+                         FullUri originType,
+                         DataModelValue data)
+    {
+        Name = name;
+        Origin = origin;
+        OriginType = originType;
+        Data = data.AsConstant();
+    }
 
-	public IncomingEvent(string eventName,
-					   FullUri? origin,
-					   FullUri originType,
-					   DataModelValue data)
-	{
-		Name = (EventName) eventName;
-		Origin = origin;
-		OriginType = originType;
-		Data = data.AsConstant();
-	}
+    public IncomingEvent(string eventName,
+                         FullUri? origin,
+                         FullUri originType,
+                         DataModelValue data)
+    {
+        Name = (EventName)eventName;
+        Origin = origin;
+        OriginType = originType;
+        Data = data.AsConstant();
+    }
 
 #region Interface IIncomingEvent
 
-	public DataModelValue Data { get; }
+    public DataModelValue Data { get; }
 
-	public InvokeId? InvokeId => null;
+    public InvokeId? InvokeId => null;
 
-	public EventName Name { get; }
+    public EventName Name { get; }
 
-	public FullUri? Origin { get; }
+    public FullUri? Origin { get; }
 
-	public FullUri OriginType { get; }
+    public FullUri OriginType { get; }
 
-	public SendId? SendId => null;
+    public SendId? SendId => null;
 
-	public EventType Type => EventType.External;
+    public EventType Type => EventType.External;
 
 #endregion
 }
