@@ -23,23 +23,13 @@ using Xtate.Core;
 
 namespace Xtate.IoProcessor;
 
-public sealed class HttpIoProcessorFactory : IIoProcessorFactory
+public sealed class HttpIoProcessorFactory(Uri baseUri, IPEndPoint ipEndPoint) : IIoProcessorFactory
 {
-	private readonly Uri _baseUri;
-
-	private readonly IPEndPoint _ipEndPoint;
-
-	public HttpIoProcessorFactory(Uri baseUri, IPEndPoint ipEndPoint)
-	{
-		_baseUri = baseUri;
-		_ipEndPoint = ipEndPoint;
-	}
-
 #region Interface IIoProcessorFactory
 
 	public async ValueTask<IEventRouter> Create(IEventConsumer eventConsumer, CancellationToken token)
 	{
-		var httpIoProcessor = new HttpIoProcessor(eventConsumer, _baseUri, _ipEndPoint) { StateMachineSessionId = null };
+		var httpIoProcessor = new HttpIoProcessor(eventConsumer, baseUri, ipEndPoint) { StateMachineSessionId = null };
 
 		await httpIoProcessor.Start(token).ConfigureAwait(false);
 
